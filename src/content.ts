@@ -95,7 +95,7 @@ locationObserver(async (href) => {
 
 	const timeStr = await getTime(isYTM);
 
-	const time = Date.now() / 1000 + timeToSec(timeStr) + reAlertTime;
+	const time = (Date.now() / 1000 + timeToSec(timeStr) + reAlertTime) * 1000;
 
 	console.log(`VideoID changed from '${__vid}' to '${vid}'`);
 	console.log(
