@@ -1,0 +1,32 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"rootDirs": ["."],
+		"paths": {
+			"$": ["src"],
+			"$/*": ["src/*"],
+			"$libs": ["src/libs"],
+			"$libs/*": ["src/libs/*"],
+			"$wrappers": ["src/libs/download_wrappers"],
+			"$wrappers/*": ["src/libs/download_wrappers/*"]
+		},
+		"target": "ESNext",
+		"useDefineForClassFields": true,
+		"module": "ESNext",
+		"lib": ["ESNext", "DOM"],
+		"moduleResolution": "Node",
+		"strict": true,
+		"sourceMap": true,
+		"resolveJsonModule": true,
+		"isolatedModules": false,
+		"esModuleInterop": true,
+		"noEmit": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"skipLibCheck": true,
+		"outDir": "build",
+		"rootDir": "src"
+	},
+	"include": ["src/**/*"]
+}
