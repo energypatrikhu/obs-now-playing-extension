@@ -1,24 +1,34 @@
+import checkEqual from './libs/checkEqual';
+import getMediaMetadataSync from './libs/getMediaMetadata';
 import { locationObserver } from './libs/locationObserver';
 import { sleep } from '@energypatrikhu/node-utils';
 
+interface Metadata {
+	title: string;
+	artist: string;
+	album: string;
+	artwork: string;
+	duration: number;
+}
+
 const apiUrl = 'http://127.0.0.1:2442/api/nowPlaying';
 
-let [_vid, __vid, vid]: [string | null, string | null, string | null] = [
-	null,
-	null,
-	null,
-];
+let [_metadata, __metadata, metadata]: [
+	Metadata | null,
+	Metadata | null,
+	Metadata | null,
+] = [null, null, null];
 let isChanged = false;
 
-async function postToApi(
-	videoId: string,
+async function sendMetadataToApi(
+	metadata: Metadata,
 	time: number,
 	retries = 0,
 ): Promise<Response> {
 	try {
 		return await fetch(apiUrl, {
 			method: 'POST',
-			body: JSON.stringify({ videoId, time }),
+			body: JSON.stringify({ metadata, time }),
 			headers: {
 				'Content-Type': 'application/json',
 			},
@@ -31,7 +41,7 @@ async function postToApi(
 				`Retrying to send data to server after ${retries + 1} second`,
 			);
 			await sleep(1000 * retries + 1);
-			return await postToApi(videoId, time, retries + 1);
+			return await sendMetadataToApi(metadata, time, retries + 1);
 		}
 
 		console.error('Max retries reached');
@@ -50,25 +60,24 @@ locationObserver(async (href) => {
 		}
 		isChanged = true;
 
-		const searchParams = new URLSearchParams(window.location.search);
-		vid = searchParams.get('v');
+		metadata = await getMediaMetadataSync();
 
-		if (vid === null) {
+		if (metadata === null) {
 			return;
 		}
 
-		if (vid === _vid) {
+		if (__metadata && checkEqual(metadata, __metadata)) {
 			return;
 		}
 
-		_vid = vid;
+		_metadata = metadata;
 
-		console.log(`VideoID changed from '${__vid}' to '${vid}'`);
+		console.log('Metadata changed from', __metadata, 'to', metadata);
 		console.log('Data changed, sending new data to server');
 
-		await postToApi(vid, Date.now());
+		await sendMetadataToApi(metadata, Date.now());
 
-		__vid = vid;
+		__metadata = metadata;
 
 		isChanged = false;
 	} catch (error) {
