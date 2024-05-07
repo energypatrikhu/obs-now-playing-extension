@@ -1,14 +1,11 @@
-import checkEqual from './checkEqual';
-
 interface Metadata {
-	title: string;
-	artist: string;
-	album: string;
-	artwork: string;
+	info: {
+		title: string;
+		artist: string;
+		artwork: string;
+	};
 	duration: number;
 }
-
-let previousMetadata: Metadata | null = null;
 
 function getMediaDuration() {
 	return new Promise<number>((resolve) => {
@@ -48,23 +45,18 @@ export default async function getMediaMetadataSync() {
 
 			if (metadata) {
 				const newMetadata: Metadata = {
-					title: metadata.title,
-					artist: metadata.artist,
-					album: metadata.album,
-					artwork: metadata.artwork
-						? Array.from(metadata.artwork).pop()?.src!
-						: '',
+					info: {
+						title: metadata.title,
+						artist: metadata.artist,
+						artwork: metadata.artwork
+							? Array.from(metadata.artwork).pop()?.src!
+							: '',
+					},
 					duration: await getMediaDuration(),
 				};
 
-				if (
-					!previousMetadata ||
-					!checkEqual(previousMetadata, newMetadata)
-				) {
-					previousMetadata = newMetadata;
-					clearInterval(_interval);
-					resolve(newMetadata);
-				}
+				clearInterval(_interval);
+				resolve(newMetadata);
 			}
 		}, 0);
 	});
