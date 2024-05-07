@@ -1,5 +1,5 @@
 import { locationObserver } from './libs/locationObserver';
-import { sleep } from '@energypatrikhu/node-core-utils';
+import { sleep } from '@energypatrikhu/node-utils';
 
 const apiUrl = 'http://127.0.0.1:2442/api/nowPlaying';
 
