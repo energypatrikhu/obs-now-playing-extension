@@ -10,9 +10,13 @@ let [_vid, __vid, vid]: [string | null, string | null, string | null] = [
 ];
 let isChanged = false;
 
-async function postToApi(videoId: string, time: number, retries = 0) {
+async function postToApi(
+	videoId: string,
+	time: number,
+	retries = 0,
+): Promise<Response> {
 	try {
-		await fetch(apiUrl, {
+		return await fetch(apiUrl, {
 			method: 'POST',
 			body: JSON.stringify({ videoId, time }),
 			headers: {
@@ -27,8 +31,11 @@ async function postToApi(videoId: string, time: number, retries = 0) {
 				`Retrying to send data to server after ${retries + 1} second`,
 			);
 			await sleep(1000 * retries + 1);
-			await postToApi(videoId, time, retries + 1);
+			return await postToApi(videoId, time, retries + 1);
 		}
+
+		console.error('Max retries reached');
+		return Promise.reject(error);
 	}
 }
 
